@@ -165,7 +165,7 @@ void zumoAutoDetect()
 
     reflectanceSensors.readLine(sensor_values);
     motors.setSpeeds(200, 200);
-    Serial.write("S");
+    Serial.write("M.");
 
     if (sensor_values[1] >= QTR_THRESHOLD || sensor_values[2] >= QTR_THRESHOLD || sensor_values[3] >= QTR_THRESHOLD || sensor_values[4] >= QTR_THRESHOLD) // detect wall and stop
     {
