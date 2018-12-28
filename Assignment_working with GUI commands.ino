@@ -25,6 +25,9 @@ int lastError = 0;
 //Initialise sensor array to hold 6 sensors;
 unsigned int sensor_values[NUM_SENSORS];
 bool stop1 = false;
+bool stop2 = false;
+bool foundWall = false;
+
 
 //get manual commands
 char incomingByte = ' ';
@@ -39,9 +42,13 @@ void setup()
 
 void loop()
 {
-  // special case when wall is detected get out of the Autmation loop then use manual mode
-  reflectanceSensors.read(sensor_values); // reads raw values from sensor
-  zumoManual();
+   reflectanceSensors.read(sensor_values); // reads raw values from sensor
+  //stop1 = false;
+  zumoAutoDetect();
+  if (stop1 == true)
+  {
+    zumoManual();
+  }
 
 }
 
@@ -114,11 +121,87 @@ void zumoManual()
     {
       calibrateZumo();
     }
+       else if (incomingByte == 'S')
+      {
+        GUISTOP = true;
+        Serial.write("S");
+        motors.setSpeeds(0,0);
+        zumoManual();
+      }
+      else if (incomingByte == 'A')
+
+      {
+        Serial.write("A");
+        //reflectanceSensors.read(sensor_values); // reads raw values from sensor
+        stop1 = false;
+        while (stop1 == false)
+        {
+          zumoAutoDetect(); // code that uses to check if more than 1 sensory array detects low reflectancy and then stops the motors
+        }
+
+
+
+      }
 
   }
 
 }
 
+void zumoAutoDetect()
+{
 
+ while (Serial.available()) {
+  if(incomingByte == "S")
+  
+  motors.setSpeeds(0,0);
+  stop1 =true;
+  zumoManual();
+ 
+  }
+
+
+  if (stop1 == false || stop2 == false  )
+  {
+
+    reflectanceSensors.readLine(sensor_values);
+    motors.setSpeeds(200, 200);
+    Serial.write("S");
+
+    if (sensor_values[1] >= QTR_THRESHOLD || sensor_values[2] >= QTR_THRESHOLD || sensor_values[3] >= QTR_THRESHOLD || sensor_values[4] >= QTR_THRESHOLD) // detect wall and stop
+    {
+
+
+      motors.setSpeeds(-200, -200);
+      delay(300);
+      motors.setSpeeds(0, 0);
+      delay(300);        
+      stop1 = true;
+      stop2 = true; // ONLY HAPPENS IN A SPECIAL CASE WHEN WALL IS DETECTED!
+      zumoManual();
+    }
+
+    else if (sensor_values[0] >= QTR_THRESHOLD)
+    {
+
+      motors.setSpeeds(-200, -200);
+      delay(300);
+      motors.setSpeeds(50, -50); // go right
+      delay(400);
+      motors.setSpeeds(0, 0); // stop
+      //stop1 = true;
+    }
+
+    else if (sensor_values[5] >= QTR_THRESHOLD )
+    {
+      motors.setSpeeds(-200, -200);
+      delay(300);
+      motors.setSpeeds(-50, 50); // go right
+      delay(400);
+      motors.setSpeeds(0, 0);
+      // stop1 = true;
+    }
+
+  }
+}
 
 
