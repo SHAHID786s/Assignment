@@ -38,7 +38,7 @@ public void Right_click(GButton source, GEvent event) { //_CODE_:button3:604378:
 
 public void Forward_click(GButton source, GEvent event) { //_CODE_:button4:348760:
 println("forward button clicked");
-} //_CODE_:button4:348760:
+} 
 
 public void Back_click(GButton source, GEvent event) { //_CODE_:button5:984108:
   println("back button clicked");
