@@ -14,6 +14,22 @@ public void setup() {
 }
 
 public void draw() {
-  background(200, 200, 200);  
 
+  background(200, 200, 200);
+  fill(227, 230, 255);
+  formatTxt();
+  while (port.available() > 0) 
+  {
+    input = port.readStringUntil('.');
+    if (input != null) {
+      if (input.startsWith("M"))
+      {
+         messagesFromZumo.setText("*** MANUAL MODE IS ON ZUMO HIT A WALL ***");
+        
+      } else
+      {
+        roomMessagesFromZumo.appendText(input);
+      }
+    }
+  }
 }
