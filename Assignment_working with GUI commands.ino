@@ -1,16 +1,3 @@
-/*
-   Demo line-following code for the Pololu Zumo Robot
-
-   This code will follow a black line on a white background, using a
-   PID-based algorithm.  It works decently on courses with smooth, 6"
-   radius curves and has been tested with Zumos using 30:1 HP and
-   75:1 HP motors.  Modifications might be required for it to work
-   well on different courses or with different motors.
-
-   https://www.pololu.com/catalog/product/2506
-   https://www.pololu.com
-   https://forum.pololu.com
-*/
 
 #include <Wire.h>
 #include <ZumoShield.h>
