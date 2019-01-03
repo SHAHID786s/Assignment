@@ -50,6 +50,20 @@ public void Automate_click(GButton source, GEvent event) { //_CODE_:button5:9841
   messagesToZumo.setText("Automating Mode");
    messagesFromZumo.setText(" ");
 } 
+public void Room_Left_click(GButton source, GEvent event) { //_CODE_:button5:984108:
+  port.write('Y');
+  println("Room_Left command sent to ZUMO_BOT");    
+} 
+public void Scan_click(GButton source, GEvent event) { //_CODE_:button5:984108:
+  port.write('G');
+  println("Scan command sent to ZUMO_BOT");
+} //_CODE_:button5:984108:
+
+public void Room_Right_click(GButton source, GEvent event) { //_CODE_:button5:984108:
+  port.write('Z');
+  println("Room_Right command sent to ZUMO_BOT");  
+} 
+
 
 public void Stop_click(GButton source, GEvent event) { //_CODE_:button5:984108:
   port.write('S');
