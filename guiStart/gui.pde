@@ -128,6 +128,21 @@ public void createGUI(){
   Automate.setText("Automate");
   Automate.setTextBold();
   Automate.addEventHandler(this, "Automate_click");
+  
+  Room_Left = new GButton(this, 180, 220, 100, 30);
+  Room_Left.setText("Room Left");
+  Room_Left.setTextBold();
+  Room_Left.addEventHandler(this, "Room_Left_click");
+
+  Room_Right = new GButton(this, 390, 220, 100, 30);
+  Room_Right.setText("Room Right");
+  Room_Right.setTextBold();
+  Room_Right.addEventHandler(this, "Room_Right_click");  
+  
+  scan = new GButton(this, 285, 220, 100, 30);
+  scan.setText("Scan");
+  scan.setTextBold();
+  scan.addEventHandler(this, "Scan_click");  
 }
 
 // Variable declarations 
@@ -142,4 +157,6 @@ GButton Forward;
 GButton Back; 
 GButton Stop; 
 GButton Automate;
-GButton Automate;
+GButton scan;
+GButton Room_Left;
+GButton Room_Right;
