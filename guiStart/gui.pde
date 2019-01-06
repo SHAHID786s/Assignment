@@ -50,6 +50,20 @@ public void Automate_click(GButton source, GEvent event) { //_CODE_:button5:9841
   messagesToZumo.setText("Automating Mode");
    messagesFromZumo.setText(" ");
 } 
+public void Room_Left_click(GButton source, GEvent event) { //_CODE_:button5:984108:
+  port.write('Y');
+  println("Room_Left command sent to ZUMO_BOT");    
+} 
+public void Scan_click(GButton source, GEvent event) { //_CODE_:button5:984108:
+  port.write('G');
+  println("Scan command sent to ZUMO_BOT");
+} //_CODE_:button5:984108:
+
+public void Room_Right_click(GButton source, GEvent event) { //_CODE_:button5:984108:
+  port.write('Z');
+  println("Room_Right command sent to ZUMO_BOT");  
+} 
+
 
 public void Stop_click(GButton source, GEvent event) { //_CODE_:button5:984108:
   port.write('S');
@@ -114,6 +128,21 @@ public void createGUI(){
   Automate.setText("Automate");
   Automate.setTextBold();
   Automate.addEventHandler(this, "Automate_click");
+  
+  Room_Left = new GButton(this, 180, 220, 100, 30);
+  Room_Left.setText("Room Left");
+  Room_Left.setTextBold();
+  Room_Left.addEventHandler(this, "Room_Left_click");
+
+  Room_Right = new GButton(this, 390, 220, 100, 30);
+  Room_Right.setText("Room Right");
+  Room_Right.setTextBold();
+  Room_Right.addEventHandler(this, "Room_Right_click");  
+  
+  scan = new GButton(this, 285, 220, 100, 30);
+  scan.setText("Scan");
+  scan.setTextBold();
+  scan.addEventHandler(this, "Scan_click");  
 }
 
 // Variable declarations 
@@ -128,4 +157,6 @@ GButton Forward;
 GButton Back; 
 GButton Stop; 
 GButton Automate;
-GButton Automate;
+GButton scan;
+GButton Room_Left;
+GButton Room_Right;

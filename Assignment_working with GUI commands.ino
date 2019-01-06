@@ -1,12 +1,20 @@
 
 #include <Wire.h>
 #include <ZumoShield.h>
+#include <NewPing.h>
 #define QTR_THRESHOLD 850 // microseconds
 #define NUM_SENSORS 6
+#define TRIGGER_PIN  6  // Arduino pin tied to trigger pin on the ultrasonic sensor.
+#define ECHO_PIN     2  // Arduino pin tied to echo pin on the ultrasonic sensor.
+#define MAX_DISTANCE 15 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
+
+// Instantiating objects.
 ZumoBuzzer buzzer;
 ZumoReflectanceSensorArray reflectanceSensors(QTR_NO_EMITTER_PIN);
 ZumoMotors motors;
 Pushbutton button(ZUMO_BUTTON);
+NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
+
 
 int lastError = 0;
 //Initialise sensor array to hold 6 sensors;
@@ -114,6 +122,29 @@ void zumoManual()
         Serial.write("S");
         motors.setSpeeds(0,0);
         zumoManual();
+      }//Y & Z FOR ROOM DETECTION ON THEIR RESPECTIVE SIDES VIA G.U.I.
+      else if (incomingByte == 'Y')
+      {
+        // Room LEFT.
+        Serial.print("Room to the LEFT.");
+      }
+      else if (incomingByte == 'Z')
+      {
+        // Room RIGHT.
+        Serial.print("Room to the RIGHT.");
+      }
+      else if (incomingByte == 'G')
+      {
+        // Performing a scan until object found
+        //scanForObjects();
+        if (sonar.ping() > 0) // Ultrasonic sensor picks up an object when ping value is greater than 0.
+        {
+          Serial.print("Object found.");
+        }
+        else
+        {
+          Serial.print("Object not found.");
+        }
       }
       else if (incomingByte == 'A')
 
