@@ -168,58 +168,81 @@ void zumoManual()
 void zumoAutoDetect()
 {
 
- while (Serial.available()) {
-  if(incomingByte == "S")
-  
-  motors.setSpeeds(0,0);
-  stop1 =true;
-  zumoManual();
- 
+  // Stop automation if the STOP button is pressed via the G.U.I.
+  while (Serial.available()) {
+    if (incomingByte == "S")
+      motors.setSpeeds(0, 0);
+    stop1 = true;
+    zumoManual();
   }
-
 
   if (stop1 == false || stop2 == false  )
   {
-
     reflectanceSensors.readLine(sensor_values);
-    motors.setSpeeds(200, 200);
-    Serial.write("M.");
+    zumoForward(0); // keep going forward
 
-    if (sensor_values[1] >= QTR_THRESHOLD || sensor_values[2] >= QTR_THRESHOLD || sensor_values[3] >= QTR_THRESHOLD || sensor_values[4] >= QTR_THRESHOLD) // detect wall and stop
+    if (sensor_values[1] >= QTR_THRESHOLD || sensor_values[2] >= QTR_THRESHOLD || sensor_values[3] >= QTR_THRESHOLD || sensor_values[4] >= QTR_THRESHOLD) // Detect wall through observing low reflectance via
+      //reflectance sensors and if 1 or more detects this threshold then stop.
     {
-
-
-      motors.setSpeeds(-200, -200);
-      delay(300);
-      motors.setSpeeds(0, 0);
-      delay(300);        
+      zumoBack(300);
+      zumoStop(300);
+      
       stop1 = true;
       stop2 = true; // ONLY HAPPENS IN A SPECIAL CASE WHEN WALL IS DETECTED!
+      
+      Serial.print("M."); // SEND MANUAL MODE TO GUI WHEN WALL DETECTED
+      
+      //corridors.push_back(corridorDelayCount);// save the time
+      
       zumoManual();
     }
 
     else if (sensor_values[0] >= QTR_THRESHOLD)
     {
-
-      motors.setSpeeds(-200, -200);
-      delay(300);
-      motors.setSpeeds(50, -50); // go right
-      delay(400);
-      motors.setSpeeds(0, 0); // stop
-      //stop1 = true;
+      zumoBack(300);
+      zumoRight(400);
+      zumoStop(0);
     }
 
     else if (sensor_values[5] >= QTR_THRESHOLD )
     {
-      motors.setSpeeds(-200, -200);
-      delay(300);
-      motors.setSpeeds(-50, 50); // go right
-      delay(400);
-      motors.setSpeeds(0, 0);
-      // stop1 = true;
+      zumoBack(300);
+      zumoLeft(400);
+      zumoStop(0);
     }
 
   }
+}
+
+void zumoLeft(int setDelay)
+{
+  motors.setSpeeds(-50, 50); // Zumo turn LEFT.
+  delay(setDelay);
+  //corridorDelayCount = setDelay;
+}
+
+void zumoRight(int setDelay)
+{
+  motors.setSpeeds(50, -50); // Zumo turn RIGHT.
+  delay(setDelay);
+}
+
+void zumoForward(int setDelay)
+{
+  motors.setSpeeds(200, 200); // Keep moving Zumo in a straight line.
+  delay(setDelay);
+}
+
+void zumoBack(int setDelay)
+{
+  motors.setSpeeds(-200, -200); //move back
+  delay(setDelay);
+}
+
+void zumoStop(int setDelay)
+{
+  motors.setSpeeds(0, 0);
+  delay(setDelay);
 }
 
 
