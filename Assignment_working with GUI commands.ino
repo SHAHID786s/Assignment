@@ -32,7 +32,9 @@ void setup()
 
 
   Serial.begin(9600); // Start serial communication at 9600 bps
-  calibrateZumo();
+ // calibrateZumo();
+  stop1 =true;
+  stop2 = true;
 };
 
 void loop()
@@ -49,15 +51,7 @@ void loop()
 
 void calibrateZumo()
 {
-
-  // Initialize the reflectance sensors module
-  reflectanceSensors.init();
-  button.waitForButton();
-
-  // Turn on LED to indicate we are in calibration mode
-  pinMode(13, OUTPUT);
-  digitalWrite(13, HIGH);
-
+ 
   // Wait 1 second and then begin automatic sensor calibration
   // by rotating in place to sweep the sensors over the line
   delay(1000);
@@ -75,11 +69,6 @@ void calibrateZumo()
     delay(20);
   }
   motors.setSpeeds(0, 0);
-
-  // Turn off LED to indicate we are through with calibration
-  digitalWrite(13, LOW);
-  button.waitForButton();
-  buzzer.play(">g32>>c32");
 }
 
 void zumoManual()
@@ -156,9 +145,6 @@ void zumoManual()
         {
           zumoAutoDetect(); // code that uses to check if more than 1 sensory array detects low reflectancy and then stops the motors
         }
-
-
-
       }
 
   }
