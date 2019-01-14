@@ -72,6 +72,11 @@ public void Stop_click(GButton source, GEvent event) { //_CODE_:button5:984108:
    messagesFromZumo.setText("");
 } //_CODE_:button5:984108:
 
+public void Calibrate_click(GButton source, GEvent event) { //_CODE_:button5:984108:
+  port.write('C');
+  println("Calibrate command sent to ZUMO_BOT");
+} 
+
 
 
 
@@ -142,7 +147,12 @@ public void createGUI(){
   scan = new GButton(this, 285, 220, 100, 30);
   scan.setText("Scan");
   scan.setTextBold();
-  scan.addEventHandler(this, "Scan_click");  
+  scan.addEventHandler(this, "Scan_click"); 
+  
+  calibrate = new GButton(this, 285, 325, 100, 30);
+  calibrate.setText("Calibrate");
+  calibrate.setTextBold();
+  calibrate.addEventHandler(this, "Calibrate_click");
 }
 
 // Variable declarations 
@@ -160,3 +170,4 @@ GButton Automate;
 GButton scan;
 GButton Room_Left;
 GButton Room_Right;
+GButton calibrate;
