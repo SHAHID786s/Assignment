@@ -122,18 +122,39 @@ void zumoManual()
         // Room RIGHT.
         Serial.print("Room to the RIGHT.");
       }
-      else if (incomingByte == 'G')
-      {
-        // Performing a scan until object found
-        //scanForObjects();
-        if (sonar.ping() > 0) // Ultrasonic sensor picks up an object when ping value is greater than 0.
+   else if (incomingByte == 'G')
+      { 
+        int count =0;
+        //objFound = false;
+        while (count != 10)
         {
-          Serial.print("Object found.");
+          count++;
+          scanForObjects();
+          motors.setSpeeds(200, -200); //right
+          delay(200);
+
+          motors.setSpeeds(200, -200); //right
+          delay(200);
+          scanForObjects();
+          delay(200);
+
+          motors.setSpeeds(-200, 200); //left
+          delay(200);
+          scanForObjects();
+          motors.setSpeeds(-200, 200); //left
+          delay(200);
+          scanForObjects();
+        }
+        if (objFound == true)
+        {
+          Serial.print("OBJECT FOUND.");
         }
         else
         {
-          Serial.print("Object not found.");
+          Serial.print("OBJECT NOT FOUND.");
         }
+        
+
       }
       else if (incomingByte == 'A')
 
@@ -199,6 +220,17 @@ void zumoAutoDetect()
 
   }
 }
+void scanForObjects()
+{
+  float dist = sonar.ping_cm(); //delay(100);
+  if ( dist > 2) // Ultrasonic sensor picks up an object when ping value is greater than 0.
+  {
+    objFound = true;
+  }
+
+}
+
+
 
 void zumoLeft(int setDelay)
 {
