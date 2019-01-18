@@ -63,6 +63,16 @@ public void Room_Right_click(GButton source, GEvent event) { //_CODE_:button5:98
   port.write('Z');
   println("Room_Right command sent to ZUMO_BOT");  
 } 
+public void ReachedEnd_click(GButton source, GEvent event) { //_CODE_:button5:984108:
+  port.write('E');
+  println("Reached an End command sent to ZUMO_BOT");
+} //_CODE_:button5:984108:
+
+public void AutomatePrevious_click(GButton source, GEvent event) { //_CODE_:button5:984108:
+  port.write('I');
+  println("Automated previous command sent to ZUMO_BOT");
+} //_CODE_:button5:984108:
+
 
 
 public void Stop_click(GButton source, GEvent event) { //_CODE_:button5:984108:
@@ -153,6 +163,18 @@ public void createGUI(){
   calibrate.setText("Calibrate");
   calibrate.setTextBold();
   calibrate.addEventHandler(this, "Calibrate_click");
+  
+  reachedEnd = new GButton(this, 35, 70, 150, 30);
+  reachedEnd.setText("Reached an End");
+  reachedEnd.setTextBold();
+  reachedEnd.addEventHandler(this, "ReachedEnd_click");
+  reachedEnd.setLocalColorScheme(GCScheme.PURPLE_SCHEME);
+
+  automatePrevious = new GButton(this, 35, 30, 150, 30);
+  automatePrevious.setText("Automate Previous");
+  automatePrevious.setTextBold();
+  automatePrevious.addEventHandler(this, "AutomatePrevious_click");
+  automatePrevious.setLocalColorScheme(GCScheme.PURPLE_SCHEME);
 }
 
 // Variable declarations 
@@ -171,3 +193,5 @@ GButton scan;
 GButton Room_Left;
 GButton Room_Right;
 GButton calibrate;
+GButton reachedEnd;
+GButton automatePrevious;
