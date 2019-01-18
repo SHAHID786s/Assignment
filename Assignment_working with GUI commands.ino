@@ -128,6 +128,15 @@ void zumoManual()
         // Room LEFT.
         Serial.print("Room to the LEFT.");
       }
+    
+     else if (incomingByte == 'I')
+      {
+        Serial.print("Automating previous step.");
+        //corridors.push_back(corridorDelayCount= corridorDelayCount + 45);
+        for (int i = corridors[corridors.size() - 1]; i > 0; i = i - 45)        {
+          sidesDetect();
+        }
+      }
       else if (incomingByte == 'Z')
       {
         // Room RIGHT.
@@ -135,16 +144,7 @@ void zumoManual()
       }
       else if (incomingByte == 'G')
       {
-        // Performing a scan until object found
-        //scanForObjects();
-        if (sonar.ping() > 0) // Ultrasonic sensor picks up an object when ping value is greater than 0.
-        {
-          Serial.print("Object found.");
-        }
-        else
-        {
-          Serial.print("Object not found.");
-        }
+         movingScan();
       }
       else if (incomingByte == 'A')
 
@@ -231,6 +231,7 @@ void zumoForward(int setDelay)
 {
   motors.setSpeeds(200, 200); // Keep moving Zumo in a straight line.
   delay(setDelay);
+  motors.setSpeeds(0, 0);
 }
 
 void zumoBack(int setDelay)
@@ -243,6 +244,64 @@ void zumoStop(int setDelay)
 {
   motors.setSpeeds(0, 0);
   delay(setDelay);
+}
+void sidesDetect()
+{
+  reflectanceSensors.readLine(sensor_values);
+  zumoForward(45); // keep going forward
+  if (sensor_values[0] >= QTR_THRESHOLD)
+  {
+    zumoBack(100);
+    zumoRight(400);
+    zumoStop(10);
+  }
+  if (sensor_values[5] >= QTR_THRESHOLD )
+  {
+    zumoBack(100);
+    zumoLeft(400);
+    zumoStop(10);
+  }
+}
+
+void movingScan()
+{
+  int count1 = 0;
+  int count2 = 0;
+  objFound = false;
+
+  while (count1 != 12)
+  {
+    count1++;
+    scan();
+    motors.setSpeeds(130, -130); //right
+    delay(60);
+    scan();
+
+  }
+  while (count2 != 22)
+  {
+    count2++;
+    scan();
+    motors.setSpeeds(-130, 130); //left
+    delay(60);
+    scan();
+  }
+  if (objFound == true)
+  {
+    Serial.print("OBJECT FOUND.");
+  }
+  else
+  {
+    Serial.print("NO OBJECT FOUND.");
+  }
+}
+void scan()
+{
+  float dist = sonar.ping_cm(); //delay(100);
+  if ( dist > 2) // Ultrasonic sensor picks up an object when ping value is greater than 0.
+  {
+    objFound = true;
+  }
 }
 
 
