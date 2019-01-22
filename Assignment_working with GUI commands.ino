@@ -2,12 +2,18 @@
 #include <Wire.h>
 #include <ZumoShield.h>
 #include <NewPing.h>
+#include <ArduinoSTL.h>
+#include <vector>
+
 #define QTR_THRESHOLD 850 // microseconds
 #define NUM_SENSORS 6
 #define TRIGGER_PIN  6  // Arduino pin tied to trigger pin on the ultrasonic sensor.
 #define ECHO_PIN     2  // Arduino pin tied to echo pin on the ultrasonic sensor.
 #define MAX_DISTANCE 15 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
-
+#define CORRIDOR1_ 1
+#define CORRIDOR2_ 2
+#define CORRIDOR3_ 3
+#define CORRIDOR4_ 4
 // Instantiating objects.
 ZumoBuzzer buzzer;
 ZumoReflectanceSensorArray reflectanceSensors(QTR_NO_EMITTER_PIN);
@@ -22,10 +28,18 @@ unsigned int sensor_values[NUM_SENSORS];
 bool stop1 = false;
 bool stop2 = false;
 bool foundWall = false;
+int  corridorDelayCount = 45;
+int  roomCounter = 0;
+char leftDirection = 'y';
+char rightDirection = 'x';
 
 
 //get manual commands
 char incomingByte = ' ';
+
+std::vector <int> corridors;
+std::vector <int> rooms;
+std::vector <char> storeDirection;
 
 void setup()
 {
@@ -105,47 +119,70 @@ void zumoManual()
     {
       calibrateZumo();
     }
-       else if (incomingByte == 'S')
+      else if (incomingByte == 'S')
       {
-        GUISTOP = true;
-        Serial.write("S");
-        motors.setSpeeds(0,0);
+        //corridors.push_back(corridorDelayCount);// save the delays
+        motors.setSpeeds(0, 0);
         zumoManual();
-      }//Y & Z FOR ROOM DETECTION ON THEIR RESPECTIVE SIDES VIA G.U.I.
+      } //Y & Z FOR ROOM DETECTION ON THEIR RESPECTIVE SIDES VIA G.U.I.
       else if (incomingByte == 'Y')
       {
         // Room LEFT.
-        Serial.print("Room to the LEFT.");
-      }
-    
-     else if (incomingByte == 'I')
-      {
-        Serial.print("Automating previous step.");
-        //corridors.push_back(corridorDelayCount= corridorDelayCount + 45);
-        for (int i = corridors[corridors.size() - 1]; i > 0; i = i - 45)        {
-          sidesDetect();
-        }
+        roomCounter = roomCounter + 1;
+        rooms.push_back(roomCounter);
+        Serial.print(" Room to the LEFT.");
+        Serial.print(rooms[rooms.size() - 1]);
+        Serial.print(".");
       }
       else if (incomingByte == 'Z')
       {
         // Room RIGHT.
-        Serial.print("Room to the RIGHT.");
+        roomCounter = roomCounter + 1;
+        rooms.push_back(roomCounter);
+        Serial.print(" Room to the RIGHT.");
+        Serial.print(rooms[rooms.size() - 1]);
+        Serial.print(".");
       }
       else if (incomingByte == 'G')
       {
-         movingScan();
-
+        movingScan();
       }
       else if (incomingByte == 'A')
-
       {
-        Serial.write("A");
-        //reflectanceSensors.read(sensor_values); // reads raw values from sensor
-        stop1 = false;
-        while (stop1 == false)
+        stopForManual = false;
+        while (stopForManual == false)
         {
-          zumoAutoDetect(); // code that uses to check if more than 1 sensory array detects low reflectancy and then stops the motors
+          zumoAutoDetect(); // check if more than 1 sensory array detects low reflectancy
+          //and then stops the motors to identify wall detection.
         }
+      }
+      else if (incomingByte == 'E')
+      {
+        Serial.print("Reached and END.");
+        motors.setSpeeds(0, 0);
+      }
+      else if (incomingByte == 'I')
+      {
+        Serial.print("Automating previous step.");
+        for (int i = corridors[corridors.size() - 1]; i > 0; i = i - 45)        {
+          sidesDetect();
+        }
+      }
+      else if (incomingByte == 'y')
+      {
+        //corridor left
+        Serial.print("SAVING CORRIDOR LEFT TURN.");
+        storeDirection.push_back(leftDirection); // negate for return journey.
+      }
+      else if (incomingByte == 'x')
+      {
+        //corridor right
+        Serial.print("SAVING CORRIDOR RIGHT TURN.");
+        storeDirection.push_back(rightDirection);
+      }
+      else if (incomingByte == 'p')
+      {
+        returnJourney();// return journey
       }
 
   }
@@ -302,4 +339,52 @@ void scan()
   }
 }
 
+void getCorridorDirection(int pos)
+{
+  if (storeDirection[storeDirection.size() - pos] == 'y') // If indicated corridor right, turn. Then do oppoisite for the left side
+  {
+
+    Serial.print(storeDirection[storeDirection.size() - pos]); //print out directions for testing on return journey in gui
+    Serial.print('.');
+    zumoRight(695);
+  }
+  else
+  {
+    Serial.print(storeDirection[storeDirection.size() - pos]);
+    Serial.print('.');
+    zumoLeft(695);
+  }
+}
+
+void turnAroundFromCorridor()
+{
+  zumoRight(1870); // turn around. For the return journey in task 6.
+}
+
+void travelCorridorlengthDuration(int corridorNO)
+{
+  for (int i = corridors[corridors.size() - corridorNO]; i > 0; i = i - 45) //last corridor
+  {
+    sidesDetect(); // travel whilst detecting blacklines according to the duration of the last most corridor.
+  }
+}
+
+void returnJourney()
+{
+  digitalWrite(13, HIGH); // light beacon
+  Serial.print("RETURNING HOME."); // send return message to G.U.I
+  travelCorridorlengthDuration(CORRIDOR1_);
+
+  travelCorridorlengthDuration(CORRIDOR2_);
+  turnAroundFromCorridor(); // turn around to go back home.
+  travelCorridorlengthDuration(CORRIDOR2_);// for that delay and for that corridor go down in the delay (45 milisecs).
+
+  getCorridorDirection(CORRIDOR1_); // get last corridor direction.
+
+  travelCorridorlengthDuration(CORRIDOR3_); // get second to last corridor delay.
+  getCorridorDirection(CORRIDOR3_); // get the turn for the second to last corridor
+
+  travelCorridorlengthDuration(CORRIDOR4_); // get the final delay for the final corridor for which the Zumo can travel back down to automatically.
+  digitalWrite(13, LOW); // light beacon off
+}
 

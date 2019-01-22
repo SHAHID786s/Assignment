@@ -175,6 +175,26 @@ public void createGUI(){
   automatePrevious.setTextBold();
   automatePrevious.addEventHandler(this, "AutomatePrevious_click");
   automatePrevious.setLocalColorScheme(GCScheme.PURPLE_SCHEME);
+  
+    Return = new GButton(this, 390, 255, 100, 30);
+  Return.setText("RETURN HOME");
+  Return.setTextBold();
+  Return.addEventHandler(this, "Return_click");
+  Return.setLocalColorScheme(GCScheme.PURPLE_SCHEME);
+
+  corridorTurnRight = new GButton(this, 390, 290, 100, 30);
+  corridorTurnRight.setText("CORRIDOR TURN RIGHT");
+  corridorTurnRight.setTextBold();
+  corridorTurnRight.addEventHandler(this, "corridorTurnRight_click");
+  corridorTurnRight.setLocalColorScheme(GCScheme.PURPLE_SCHEME);
+
+  corridorTurnLeft = new GButton(this, 390, 325, 100, 30);
+  corridorTurnLeft.setText("CORRIDOR TURN LEFT");
+  corridorTurnLeft.setTextBold();
+  corridorTurnLeft.addEventHandler(this, "corridorTurnLeft_click");
+  corridorTurnLeft.setLocalColorScheme(GCScheme.PURPLE_SCHEME);
+  
+
 }
 
 // Variable declarations 
@@ -195,3 +215,6 @@ GButton Room_Right;
 GButton calibrate;
 GButton reachedEnd;
 GButton automatePrevious;
+GButton Return;
+GButton corridorTurnRight;
+GButton corridorTurnLeft;
